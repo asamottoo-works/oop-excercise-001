@@ -6,7 +6,8 @@ public class ReiwaHoliday {
 	 * 要求仕様
 	 * ・入力された日付文字列が令和の休日かどうかを返す。
 	 * ・休日である場合はtrue, そうでない場合はfalseとなる。
-	 * ・休日の定義は内閣府発行の休日の定義に基づく。
+	 * ・土日は休日とする。
+	 * ・祝日の定義は内閣府発行の「国民の祝日」の定義に基づく。
 	 * ・ただし、春分の日と秋分の日は毎年定義が変わるため、このプロジェクトでは春分の日：3/21, 秋分の日：9/23を固定とする。
 	 * ・入力値に問題がある場合は例外を投げる。
 	 * ・令和開始日時である2019年05月01日以前の日付を入力すると例外を投げる。
@@ -157,25 +158,53 @@ public class ReiwaHoliday {
 								Integer.parseInt(in.substring(8, 10)))) {
 					return true;
 				} else if (Integer.parseInt(in.substring(8, 10)) == 23) {
-
+					return true;
 				} else {
 					return false;
 				}
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 10) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+				throw new IllegalArgumentException();
+			} else {
+				if (Integer.parseInt(in.substring(8, 10)) / 7 == 1 &&
+						isMonday(Integer.parseInt(in.substring(0, 4)),
+								Integer.parseInt(in.substring(5, 7)),
+								Integer.parseInt(in.substring(8, 10)))) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 11) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+				throw new IllegalArgumentException();
+			} else {
+				if (Integer.parseInt(in.substring(8, 10)) == 3) {
+					return true;
+				} else if (Integer.parseInt(in.substring(8, 10)) == 23) {
+						return true;
+				} else {
+					return false;
+				}
+			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 12) {
-
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+				throw new IllegalArgumentException();
+			} else {
+				return false;
+			}
 		} else {
 			throw new IllegalArgumentException();
 
 		}
+	}
 
-
-		return false;
+	private boolean isNormalHoliday() {
+		return true;
 	}
 
 	private boolean isMonday(int year, int month, int day) {
