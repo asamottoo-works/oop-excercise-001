@@ -23,6 +23,9 @@ public class ReiwaHoliday {
 		} else if (Integer.parseInt(in.substring(0, 4)) < 2019) {
 			throw new IllegalArgumentException();
 
+		} else if (!in.substring(4, 5).equals("/") || !in.substring(7, 8).equals("/")) {
+			throw new IllegalArgumentException();
+
 		} else if (Integer.parseInt(in.substring(5, 7)) < 1) {
 			throw new IllegalArgumentException();
 
@@ -39,8 +42,72 @@ public class ReiwaHoliday {
 		return false;
 	}
 
+	private String dateString(int[] targetDate) {
+		String year = String.valueOf(targetDate[0]);
+		String month = (targetDate[1] < 10 ? "0" : "") + String.valueOf(targetDate[1]);
+		String day = (targetDate[2] < 10 ? "0" : "") + String.valueOf(targetDate[2]);
+		return year + "/" + month + "/" + day;
+	}
+
 	private boolean isAdditionalHoliday(String in) {
+		int[] targetDate = new int[3];
+		targetDate[0] = Integer.parseInt(in.substring(0, 4));
+		targetDate[1] = Integer.parseInt(in.substring(5, 7));
+		targetDate[2] = Integer.parseInt(in.substring(8, 10));
+
+		int[] yesterday = getYesterday(targetDate);
+		String yesterdayString = dateString(yesterday);
+
+		int[] tomorrow = getTomorrow(targetDate);
+		String tomorrowString = dateString(tomorrow);
+
+		if (targetDate[1] == 5 && targetDate[2] == 6 && getDayOfWeekNumber(targetDate[0], targetDate[1], targetDate[2]) == 3) {
+			return true;
+		} else if (isMonday(targetDate[0], targetDate[1], targetDate[2]) && isPublicHoliday(yesterdayString)) {
+			return true;
+		} else if (isPublicHoliday(yesterdayString) && isPublicHoliday(tomorrowString)) {
+			return true;
+		}
+
 		return false;
+	}
+
+	private int[] getYesterday(int[] targetDate) {
+		int[] res = new int[3];
+		res[0] = targetDate[0];
+		res[1] = targetDate[1];
+		res[2] = targetDate[2];
+		res[2] -= 1;
+		if (res[2] < 1) {
+			res[1] -= 1;
+			if (res[1] < 1) {
+				res[0] -= 1;
+				res[1] = 12;
+			}
+			int[] daysOfMonth = getDaysOfMonth(res[0]);
+			res[2] = daysOfMonth[res[1]];
+		}
+		return res;
+	}
+
+	private int[] getTomorrow(int[] targetDate) {
+		int[] res = new int[3];
+		res[0] = targetDate[0];
+		res[1] = targetDate[1];
+		res[2] = targetDate[2];
+
+		int[] targetDaysOfMonth = getDaysOfMonth(targetDate[0]);
+
+		res[2] += 1;
+		if (res[2] > targetDaysOfMonth[targetDate[1]]) {
+			res[1] += 1;
+			if (res[1] > 12) {
+				res[0] += 1;
+				res[1] = 1;
+			}
+			res[2] = 1;
+		}
+		return res;
 	}
 
 	private boolean isPublicHoliday(String in) {
@@ -54,7 +121,7 @@ public class ReiwaHoliday {
 			} else {
 				if (Integer.parseInt(in.substring(8, 10)) == 1) {
 					return true;
-				} else if (Integer.parseInt(in.substring(8, 10)) / 7 == 1 &&
+				} else if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
 						isMonday(Integer.parseInt(in.substring(0, 4)),
 								Integer.parseInt(in.substring(5, 7)),
 								Integer.parseInt(in.substring(8, 10)))) {
@@ -72,6 +139,9 @@ public class ReiwaHoliday {
 
 			} else {
 				if (Integer.parseInt(in.substring(8, 10)) == 11) {
+					return true;
+				}
+				if (Integer.parseInt(in.substring(8, 10)) == 23) {
 					return true;
 				}
 			}
@@ -136,10 +206,12 @@ public class ReiwaHoliday {
 		} else if (Integer.parseInt(in.substring(5, 7)) == 7) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
-			} else if (Integer.parseInt(in.substring(8, 10)) / 7 == 2 &&
+			} else if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
 					isMonday(Integer.parseInt(in.substring(0, 4)),
 							Integer.parseInt(in.substring(5, 7)),
 							Integer.parseInt(in.substring(8, 10)))) {
+				return true;
+			} else if (Integer.parseInt(in.substring(0, 4)) == 2020 && (Integer.parseInt(in.substring(8, 10)) == 23 || Integer.parseInt(in.substring(8, 10)) == 24)) {
 				return true;
 			}
 
@@ -147,7 +219,9 @@ public class ReiwaHoliday {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
 			} else {
-				if (Integer.parseInt(in.substring(8, 10)) == 11) {
+				if (Integer.parseInt(in.substring(0, 4)) == 2020 && Integer.parseInt(in.substring(8, 10)) == 10) {
+					return true;
+				} else if (Integer.parseInt(in.substring(0, 4)) != 2020 && Integer.parseInt(in.substring(8, 10)) == 11) {
 					return true;
 				}
 			}
@@ -156,7 +230,7 @@ public class ReiwaHoliday {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
 				throw new IllegalArgumentException();
 			} else {
-				if (Integer.parseInt(in.substring(8, 10)) / 7 == 2 &&
+				if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
 						isMonday(Integer.parseInt(in.substring(0, 4)),
 								Integer.parseInt(in.substring(5, 7)),
 								Integer.parseInt(in.substring(8, 10)))) {
@@ -170,10 +244,12 @@ public class ReiwaHoliday {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
 			} else {
-				if (Integer.parseInt(in.substring(8, 10)) / 7 == 1 &&
+				if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
 						isMonday(Integer.parseInt(in.substring(0, 4)),
 								Integer.parseInt(in.substring(5, 7)),
 								Integer.parseInt(in.substring(8, 10)))) {
+					return true;
+				} else if (Integer.parseInt(in.substring(0, 4)) == 2019 && Integer.parseInt(in.substring(8, 10)) == 22) {
 					return true;
 				}
 			}
@@ -190,7 +266,7 @@ public class ReiwaHoliday {
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 12) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
 			} else {
 				return false;
@@ -200,15 +276,15 @@ public class ReiwaHoliday {
 	}
 
 	private boolean isNormalHoliday(int year, int month, int day) {
-		int dayOfWeek = dayOfWeekNumber(year, month, day);
+		int dayOfWeek = getDayOfWeekNumber(year, month, day);
 		return dayOfWeek == 0 || dayOfWeek == 6;
 	}
 
 	private boolean isMonday(int year, int month, int day) {
-		return dayOfWeekNumber(year, month, day) == 1;
+		return getDayOfWeekNumber(year, month, day) == 1;
 	}
 
-	private int dayOfWeekNumber(int year, int month, int day) {
+	private int getDayOfWeekNumber(int year, int month, int day) {
 		// 日:0, 月:1, 火:2, 水:3, 木:4, 金:5, 土:6
 		int dayOfWeek = 2; // 2019/01/01は火曜日
 		for (int baseYear = 2019; baseYear < year; baseYear++) {
