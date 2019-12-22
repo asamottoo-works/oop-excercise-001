@@ -26,7 +26,25 @@ public class ReiwaHoliday {
 		} else if (Integer.parseInt(in.substring(5, 7)) < 1) {
 			throw new IllegalArgumentException();
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 1) {
+		} else if (isPublicHoliday(in)) {
+			return true;
+
+		} else if (isNormalHoliday(Integer.parseInt(in.substring(0, 4)),
+				Integer.parseInt(in.substring(5, 7)),
+				Integer.parseInt(in.substring(8, 10)))) {
+			return true;
+		} else if (isAdditionalHoliday(in)) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isAdditionalHoliday(String in) {
+		return false;
+	}
+
+	private boolean isPublicHoliday(String in) {
+ 		if (Integer.parseInt(in.substring(5, 7)) == 1) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
 
@@ -42,7 +60,6 @@ public class ReiwaHoliday {
 								Integer.parseInt(in.substring(8, 10)))) {
 					return true;
 				}
-				return false;
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 2) {
@@ -57,7 +74,6 @@ public class ReiwaHoliday {
 				if (Integer.parseInt(in.substring(8, 10)) == 11) {
 					return true;
 				}
-				return false;
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 3) {
@@ -71,7 +87,6 @@ public class ReiwaHoliday {
 				if (Integer.parseInt(in.substring(8, 10)) == 21) {
 					return true;
 				}
-				return false;
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 4) {
@@ -85,7 +100,6 @@ public class ReiwaHoliday {
 				if (Integer.parseInt(in.substring(8, 10)) == 29) {
 					return true;
 				}
-				return false;
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 5) {
@@ -103,26 +117,20 @@ public class ReiwaHoliday {
 					} else if (Integer.parseInt(in.substring(8, 10)) == 5) {
 						return true;
 					}
-					return false;
 				} else {
 					if (Integer.parseInt(in.substring(8, 10)) == 3) {
 						return true;
 					} else if (Integer.parseInt(in.substring(8, 10)) == 4) {
 						return true;
 					} else if (Integer.parseInt(in.substring(8, 10)) == 5) {
-
 						return true;
 					}
-					return false;
 				}
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 6) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
 				throw new IllegalArgumentException();
-
-			} else {
-				return false;
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 7) {
@@ -133,8 +141,6 @@ public class ReiwaHoliday {
 							Integer.parseInt(in.substring(5, 7)),
 							Integer.parseInt(in.substring(8, 10)))) {
 				return true;
-			} else {
-				return false;
 			}
 
 		} else if (Integer.parseInt(in.substring(5, 7)) == 8) {
@@ -143,8 +149,6 @@ public class ReiwaHoliday {
 			} else {
 				if (Integer.parseInt(in.substring(8, 10)) == 11) {
 					return true;
-				} else {
-					return false;
 				}
 			}
 
@@ -159,8 +163,6 @@ public class ReiwaHoliday {
 					return true;
 				} else if (Integer.parseInt(in.substring(8, 10)) == 23) {
 					return true;
-				} else {
-					return false;
 				}
 			}
 
@@ -173,8 +175,6 @@ public class ReiwaHoliday {
 								Integer.parseInt(in.substring(5, 7)),
 								Integer.parseInt(in.substring(8, 10)))) {
 					return true;
-				} else {
-					return false;
 				}
 			}
 
@@ -185,9 +185,7 @@ public class ReiwaHoliday {
 				if (Integer.parseInt(in.substring(8, 10)) == 3) {
 					return true;
 				} else if (Integer.parseInt(in.substring(8, 10)) == 23) {
-						return true;
-				} else {
-					return false;
+					return true;
 				}
 			}
 
@@ -197,18 +195,31 @@ public class ReiwaHoliday {
 			} else {
 				return false;
 			}
-		} else {
-			throw new IllegalArgumentException();
-
 		}
+		return false;
 	}
 
-	private boolean isNormalHoliday() {
-		return true;
+	private boolean isNormalHoliday(int year, int month, int day) {
+		int dayOfWeek = dayOfWeekNumber(year, month, day);
+		return dayOfWeek == 0 || dayOfWeek == 6;
 	}
 
 	private boolean isMonday(int year, int month, int day) {
-		return true;
+		return dayOfWeekNumber(year, month, day) == 1;
+	}
+
+	private int dayOfWeekNumber(int year, int month, int day) {
+		// 日:0, 月:1, 火:2, 水:3, 木:4, 金:5, 土:6
+		int dayOfWeek = 2; // 2019/01/01は火曜日
+		for (int baseYear = 2019; baseYear < year; baseYear++) {
+			dayOfWeek += isLeapYear(baseYear) ? 2 : 1;
+		}
+		int[] daysOfMonth = getDaysOfMonth(year);
+		for (int baseMonth = 1; baseMonth < month; baseMonth++) {
+			dayOfWeek += daysOfMonth[baseMonth];
+		}
+		dayOfWeek += day - 1;
+		return dayOfWeek % 7;
 	}
 
 	private boolean isLeapYear(int year) {
