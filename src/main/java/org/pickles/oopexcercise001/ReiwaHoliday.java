@@ -1,5 +1,7 @@
 package org.pickles.oopexcercise001;
 
+import org.pickles.oopexcercise001.date.Date;
+
 public class ReiwaHoliday {
 
 	/**
@@ -23,25 +25,25 @@ public class ReiwaHoliday {
 			throw new IllegalArgumentException();
 		}
 
-		if (Integer.parseInt(in.substring(0, 4)) < 2019) {
-			throw new IllegalArgumentException();
-		}
-
 		if (!in.substring(4, 5).equals("/") || !in.substring(7, 8).equals("/")) {
 			throw new IllegalArgumentException();
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) < 1) {
+		Date targetDate = new Date(in);
+
+		if (targetDate.year.value < 2019) {
 			throw new IllegalArgumentException();
 		}
 
-		if (isPublicHoliday(in)) {
+		if (targetDate.month.value < 1) {
+			throw new IllegalArgumentException();
+		}
+
+		if (isPublicHoliday(targetDate)) {
 			return true;
 		}
 
-		if (isNormalHoliday(Integer.parseInt(in.substring(0, 4)),
-				Integer.parseInt(in.substring(5, 7)),
-				Integer.parseInt(in.substring(8, 10)))) {
+		if (isNormalHoliday(targetDate)) {
 			return true;
 		}
 
@@ -52,299 +54,265 @@ public class ReiwaHoliday {
 		return false;
 	}
 
-	private String dateString(int[] targetDate) {
-		String year = String.valueOf(targetDate[0]);
-		String month = (targetDate[1] < 10 ? "0" : "") + String.valueOf(targetDate[1]);
-		String day = (targetDate[2] < 10 ? "0" : "") + String.valueOf(targetDate[2]);
-		return year + "/" + month + "/" + day;
-	}
-
 	private boolean isAdditionalHoliday(String in) {
-		int[] targetDate = new int[3];
-		targetDate[0] = Integer.parseInt(in.substring(0, 4));
-		targetDate[1] = Integer.parseInt(in.substring(5, 7));
-		targetDate[2] = Integer.parseInt(in.substring(8, 10));
+		Date targetDate = new Date(in);
 
-		int[] yesterday = getYesterday(targetDate);
-		String yesterdayString = dateString(yesterday);
+		Date yesterday = getYesterday(targetDate);
+		Date tomorrow = getTomorrow(targetDate);
 
-		int[] tomorrow = getTomorrow(targetDate);
-		String tomorrowString = dateString(tomorrow);
-
-		if (targetDate[1] == 5 && targetDate[2] == 6 && getDayOfWeekNumber(targetDate[0], targetDate[1], targetDate[2]) == 3) {
+		if (targetDate.month.value == 5 && targetDate.day.value == 6 && getDayOfWeekNumber(targetDate) == 3) {
 			return true;
 		}
 
-		if (isMonday(targetDate[0], targetDate[1], targetDate[2]) && isPublicHoliday(yesterdayString)) {
+		if (isMonday(targetDate) && isPublicHoliday(yesterday)) {
 			return true;
 		}
 
-		if (isPublicHoliday(yesterdayString) && isPublicHoliday(tomorrowString)) {
+		if (isPublicHoliday(yesterday) && isPublicHoliday(tomorrow)) {
 			return true;
 		}
 
 		return false;
 	}
 
-	private int[] getYesterday(int[] targetDate) {
-		int[] res = new int[3];
-		res[0] = targetDate[0];
-		res[1] = targetDate[1];
-		res[2] = targetDate[2];
-		res[2] -= 1;
-		if (res[2] < 1) {
-			res[1] -= 1;
-			if (res[1] < 1) {
-				res[0] -= 1;
-				res[1] = 12;
+	private Date getYesterday(Date targetDate) {
+		int resYear = targetDate.year.value;
+		int resMonth = targetDate.month.value;
+		int resDay = targetDate.day.value;
+		resDay -= 1;
+		if (resDay < 1) {
+			resMonth -= 1;
+			if (resMonth < 1) {
+				resYear -= 1;
+				resMonth = 12;
 			}
-			int[] daysOfMonth = getDaysOfMonth(res[0]);
-			res[2] = daysOfMonth[res[1]];
+			int[] daysOfMonth = getDaysOfMonth(resYear);
+			resDay = daysOfMonth[resMonth];
 		}
-		return res;
+		return new Date(resYear, resMonth, resDay);
 	}
 
-	private int[] getTomorrow(int[] targetDate) {
-		int[] res = new int[3];
-		res[0] = targetDate[0];
-		res[1] = targetDate[1];
-		res[2] = targetDate[2];
+	private Date getTomorrow(Date targetDate) {
+		int resYear = targetDate.year.value;
+		int resMonth = targetDate.month.value;
+		int resDay = targetDate.day.value;
 
-		int[] targetDaysOfMonth = getDaysOfMonth(targetDate[0]);
+		int[] targetDaysOfMonth = getDaysOfMonth(targetDate.year.value);
 
-		res[2] += 1;
-		if (res[2] > targetDaysOfMonth[targetDate[1]]) {
-			res[1] += 1;
-			if (res[1] > 12) {
-				res[0] += 1;
-				res[1] = 1;
+		resDay += 1;
+		if (resDay > targetDaysOfMonth[targetDate.month.value]) {
+			resMonth += 1;
+			if (resMonth > 12) {
+				resYear += 1;
+				resMonth = 1;
 			}
-			res[2] = 1;
+			resDay = 1;
 		}
-		return res;
+		return new Date(resYear, resMonth, resDay);
 	}
 
-	private boolean isPublicHoliday(String in) {
- 		if (Integer.parseInt(in.substring(5, 7)) == 1) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+	private boolean isPublicHoliday(Date targetDate) {
+ 		if (targetDate.month.value == 1) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
 				throw new IllegalArgumentException();
-
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
+			if (targetDate.year.value == 2019) {
 				throw new IllegalArgumentException();
-
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 1) {
+			if (targetDate.day.value == 1) {
 				return true;
 			}
 
-			if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
-					isMonday(Integer.parseInt(in.substring(0, 4)),
-							Integer.parseInt(in.substring(5, 7)),
-							Integer.parseInt(in.substring(8, 10)))) {
+			if ((targetDate.day.value - 1) / 7 == 1 &&
+					isMonday(targetDate)) {
 				return true;
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 2) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 ||
-					Integer.parseInt(in.substring(8, 10)) > (isLeapYear(Integer.parseInt(in.substring(0, 4))) ? 29 : 28)) {
+		if (targetDate.month.value == 2) {
+			if (targetDate.day.value < 1 || targetDate.day.value > (isLeapYear(targetDate.year.value) ? 29 : 28)) {
+				throw new IllegalArgumentException();
+			}
+
+			if (targetDate.year.value == 2019) {
 				throw new IllegalArgumentException();
 
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
-				throw new IllegalArgumentException();
-
-			}
-
-			if (Integer.parseInt(in.substring(8, 10)) == 11) {
+			if (targetDate.day.value == 11) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 23) {
-				return true;
-			}
-		}
-
-		if (Integer.parseInt(in.substring(5, 7)) == 3) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
-				throw new IllegalArgumentException();
-
-			}
-
-			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
-				throw new IllegalArgumentException();
-
-			}
-
-			if (Integer.parseInt(in.substring(8, 10)) == 21) {
+			if (targetDate.day.value == 23) {
 				return true;
 			}
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 4) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+		if (targetDate.month.value == 3) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
 				throw new IllegalArgumentException();
-
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
+			if (targetDate.year.value == 2019) {
 				throw new IllegalArgumentException();
-
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 29) {
+			if (targetDate.day.value == 21) {
 				return true;
 			}
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 5) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+		if (targetDate.month.value == 4) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
+				throw new IllegalArgumentException();
+			}
+
+			if (targetDate.year.value == 2019) {
+				throw new IllegalArgumentException();
+			}
+
+			if (targetDate.day.value == 29) {
+				return true;
+			}
+		}
+
+		if (targetDate.month.value == 5) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
 				throw new IllegalArgumentException();
 
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) == 2019 && Integer.parseInt(in.substring(8, 10)) == 1) {
+			if (targetDate.year.value == 2019 && targetDate.day.value == 1) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 3) {
+			if (targetDate.day.value == 3) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 4) {
+			if (targetDate.day.value == 4) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 5) {
+			if (targetDate.day.value == 5) {
 				return true;
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 6) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+		if (targetDate.month.value == 6) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
 				throw new IllegalArgumentException();
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 7) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+		if (targetDate.month.value == 7) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
 				throw new IllegalArgumentException();
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
-					isMonday(Integer.parseInt(in.substring(0, 4)),
-							Integer.parseInt(in.substring(5, 7)),
-							Integer.parseInt(in.substring(8, 10)))) {
+			if (targetDate.year.value != 2020 && (targetDate.day.value - 1) / 7 == 2 && isMonday(targetDate)) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) == 2020 && (Integer.parseInt(in.substring(8, 10)) == 23 || Integer.parseInt(in.substring(8, 10)) == 24)) {
+			if (targetDate.year.value == 2020 && (targetDate.day.value == 23 || targetDate.day.value == 24)) {
 				return true;
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 8) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+		if (targetDate.month.value == 8) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
 				throw new IllegalArgumentException();
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) == 2020 && Integer.parseInt(in.substring(8, 10)) == 10) {
+			if (targetDate.year.value == 2020 && targetDate.day.value == 10) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) != 2020 && Integer.parseInt(in.substring(8, 10)) == 11) {
+			if (targetDate.year.value != 2020 && targetDate.day.value == 11) {
 				return true;
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 9) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+		if (targetDate.month.value == 9) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
 				throw new IllegalArgumentException();
 			}
 
-			if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
-					isMonday(Integer.parseInt(in.substring(0, 4)),
-							Integer.parseInt(in.substring(5, 7)),
-							Integer.parseInt(in.substring(8, 10)))) {
+			if ((targetDate.day.value - 1) / 7 == 2 && isMonday(targetDate)) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 23) {
+			if (targetDate.day.value == 23) {
 				return true;
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 10) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+		if (targetDate.month.value == 10) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
 				throw new IllegalArgumentException();
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
-					isMonday(Integer.parseInt(in.substring(0, 4)),
-							Integer.parseInt(in.substring(5, 7)),
-							Integer.parseInt(in.substring(8, 10)))) {
+			if (targetDate.year.value != 2020 && (targetDate.day.value - 1) / 7 == 1 && isMonday(targetDate)) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(0, 4)) == 2019 && Integer.parseInt(in.substring(8, 10)) == 22) {
+			if (targetDate.year.value == 2019 && targetDate.day.value == 22) {
 				return true;
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 11) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+		if (targetDate.month.value == 11) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
 				throw new IllegalArgumentException();
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 3) {
+			if (targetDate.day.value == 3) {
 				return true;
 			}
 
-			if (Integer.parseInt(in.substring(8, 10)) == 23) {
+			if (targetDate.day.value == 23) {
 				return true;
 			}
 
 		}
 
-		if (Integer.parseInt(in.substring(5, 7)) == 12) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+		if (targetDate.month.value == 12) {
+			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
 				throw new IllegalArgumentException();
 			}
 		}
 		return false;
 	}
 
-	private boolean isNormalHoliday(int year, int month, int day) {
-		int dayOfWeek = getDayOfWeekNumber(year, month, day);
+	private boolean isNormalHoliday(Date targetDate) {
+		int dayOfWeek = getDayOfWeekNumber(targetDate);
 		return dayOfWeek == 0 || dayOfWeek == 6;
 	}
 
-	private boolean isMonday(int year, int month, int day) {
-		return getDayOfWeekNumber(year, month, day) == 1;
+	private boolean isMonday(Date targetDate) {
+		return getDayOfWeekNumber(targetDate) == 1;
 	}
 
-	private int getDayOfWeekNumber(int year, int month, int day) {
+	private int getDayOfWeekNumber(Date targetDate) {
 		// 日:0, 月:1, 火:2, 水:3, 木:4, 金:5, 土:6
 		int dayOfWeek = 2; // 2019/01/01は火曜日
-		for (int baseYear = 2019; baseYear < year; baseYear++) {
+		for (int baseYear = 2019; baseYear < targetDate.year.value; baseYear++) {
 			dayOfWeek += isLeapYear(baseYear) ? 2 : 1;
 		}
-		int[] daysOfMonth = getDaysOfMonth(year);
-		for (int baseMonth = 1; baseMonth < month; baseMonth++) {
+		int[] daysOfMonth = getDaysOfMonth(targetDate.year.value);
+		for (int baseMonth = 1; baseMonth < targetDate.month.value; baseMonth++) {
 			dayOfWeek += daysOfMonth[baseMonth];
 		}
-		dayOfWeek += day - 1;
+		dayOfWeek += targetDate.day.value - 1;
 		return dayOfWeek % 7;
 	}
 
