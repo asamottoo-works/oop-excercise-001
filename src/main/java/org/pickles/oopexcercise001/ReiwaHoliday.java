@@ -14,31 +14,41 @@ public class ReiwaHoliday {
 	 * ・入力する日付のフォーマットはyyyy/MM/ddとし、それ以外は例外を投げる。
 	 */
 	public boolean check(String in) {
+
 		if (in == null) {
 			throw new IllegalArgumentException();
+		}
 
-		} else if (in.length() != 10) {
+		if (in.length() != 10) {
 			throw new IllegalArgumentException();
+		}
 
-		} else if (Integer.parseInt(in.substring(0, 4)) < 2019) {
+		if (Integer.parseInt(in.substring(0, 4)) < 2019) {
 			throw new IllegalArgumentException();
+		}
 
-		} else if (!in.substring(4, 5).equals("/") || !in.substring(7, 8).equals("/")) {
+		if (!in.substring(4, 5).equals("/") || !in.substring(7, 8).equals("/")) {
 			throw new IllegalArgumentException();
+		}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) < 1) {
+		if (Integer.parseInt(in.substring(5, 7)) < 1) {
 			throw new IllegalArgumentException();
+		}
 
-		} else if (isPublicHoliday(in)) {
+		if (isPublicHoliday(in)) {
 			return true;
+		}
 
-		} else if (isNormalHoliday(Integer.parseInt(in.substring(0, 4)),
+		if (isNormalHoliday(Integer.parseInt(in.substring(0, 4)),
 				Integer.parseInt(in.substring(5, 7)),
 				Integer.parseInt(in.substring(8, 10)))) {
 			return true;
-		} else if (isAdditionalHoliday(in)) {
+		}
+
+		if (isAdditionalHoliday(in)) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -63,9 +73,13 @@ public class ReiwaHoliday {
 
 		if (targetDate[1] == 5 && targetDate[2] == 6 && getDayOfWeekNumber(targetDate[0], targetDate[1], targetDate[2]) == 3) {
 			return true;
-		} else if (isMonday(targetDate[0], targetDate[1], targetDate[2]) && isPublicHoliday(yesterdayString)) {
+		}
+
+		if (isMonday(targetDate[0], targetDate[1], targetDate[2]) && isPublicHoliday(yesterdayString)) {
 			return true;
-		} else if (isPublicHoliday(yesterdayString) && isPublicHoliday(tomorrowString)) {
+		}
+
+		if (isPublicHoliday(yesterdayString) && isPublicHoliday(tomorrowString)) {
 			return true;
 		}
 
@@ -115,161 +129,197 @@ public class ReiwaHoliday {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
 
-			} else if (Integer.parseInt(in.substring(0, 4)) == 2019) {
-				throw new IllegalArgumentException();
-
-			} else {
-				if (Integer.parseInt(in.substring(8, 10)) == 1) {
-					return true;
-				} else if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
-						isMonday(Integer.parseInt(in.substring(0, 4)),
-								Integer.parseInt(in.substring(5, 7)),
-								Integer.parseInt(in.substring(8, 10)))) {
-					return true;
-				}
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 2) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 ||
-					Integer.parseInt(in.substring(8, 10)) > (isLeapYear(Integer.parseInt(in.substring(0, 4))) ? 29 : 28)) {
+			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
 				throw new IllegalArgumentException();
 
-			} else if (Integer.parseInt(in.substring(0, 4)) == 2019) {
-				throw new IllegalArgumentException();
-
-			} else {
-				if (Integer.parseInt(in.substring(8, 10)) == 11) {
-					return true;
-				}
-				if (Integer.parseInt(in.substring(8, 10)) == 23) {
-					return true;
-				}
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 3) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
-				throw new IllegalArgumentException();
-
-			} else if (Integer.parseInt(in.substring(0, 4)) == 2019) {
-				throw new IllegalArgumentException();
-
-			} else {
-				if (Integer.parseInt(in.substring(8, 10)) == 21) {
-					return true;
-				}
+			if (Integer.parseInt(in.substring(8, 10)) == 1) {
+				return true;
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 4) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
-				throw new IllegalArgumentException();
-
-			} else if (Integer.parseInt(in.substring(0, 4)) == 2019) {
-				throw new IllegalArgumentException();
-
-			} else {
-				if (Integer.parseInt(in.substring(8, 10)) == 29) {
-					return true;
-				}
-			}
-
-		} else if (Integer.parseInt(in.substring(5, 7)) == 5) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
-				throw new IllegalArgumentException();
-
-			} else {
-				if (Integer.parseInt(in.substring(0, 4)) == 2019) {
-					if (Integer.parseInt(in.substring(8, 10)) == 1) {
-						return true;
-					} else if (Integer.parseInt(in.substring(8, 10)) == 3) {
-						return true;
-					} else if (Integer.parseInt(in.substring(8, 10)) == 4) {
-						return true;
-					} else if (Integer.parseInt(in.substring(8, 10)) == 5) {
-						return true;
-					}
-				} else {
-					if (Integer.parseInt(in.substring(8, 10)) == 3) {
-						return true;
-					} else if (Integer.parseInt(in.substring(8, 10)) == 4) {
-						return true;
-					} else if (Integer.parseInt(in.substring(8, 10)) == 5) {
-						return true;
-					}
-				}
-			}
-
-		} else if (Integer.parseInt(in.substring(5, 7)) == 6) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
-				throw new IllegalArgumentException();
-			}
-
-		} else if (Integer.parseInt(in.substring(5, 7)) == 7) {
-			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
-				throw new IllegalArgumentException();
-			} else if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
+			if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
 					isMonday(Integer.parseInt(in.substring(0, 4)),
 							Integer.parseInt(in.substring(5, 7)),
 							Integer.parseInt(in.substring(8, 10)))) {
 				return true;
-			} else if (Integer.parseInt(in.substring(0, 4)) == 2020 && (Integer.parseInt(in.substring(8, 10)) == 23 || Integer.parseInt(in.substring(8, 10)) == 24)) {
+			}
+
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 2) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 ||
+					Integer.parseInt(in.substring(8, 10)) > (isLeapYear(Integer.parseInt(in.substring(0, 4))) ? 29 : 28)) {
+				throw new IllegalArgumentException();
+
+			}
+
+			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
+				throw new IllegalArgumentException();
+
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 11) {
 				return true;
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 8) {
+			if (Integer.parseInt(in.substring(8, 10)) == 23) {
+				return true;
+			}
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 3) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
-			} else {
-				if (Integer.parseInt(in.substring(0, 4)) == 2020 && Integer.parseInt(in.substring(8, 10)) == 10) {
-					return true;
-				} else if (Integer.parseInt(in.substring(0, 4)) != 2020 && Integer.parseInt(in.substring(8, 10)) == 11) {
-					return true;
-				}
+
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 9) {
+			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
+				throw new IllegalArgumentException();
+
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 21) {
+				return true;
+			}
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 4) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
 				throw new IllegalArgumentException();
-			} else {
-				if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
-						isMonday(Integer.parseInt(in.substring(0, 4)),
-								Integer.parseInt(in.substring(5, 7)),
-								Integer.parseInt(in.substring(8, 10)))) {
-					return true;
-				} else if (Integer.parseInt(in.substring(8, 10)) == 23) {
-					return true;
-				}
+
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 10) {
+			if (Integer.parseInt(in.substring(0, 4)) == 2019) {
+				throw new IllegalArgumentException();
+
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 29) {
+				return true;
+			}
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 5) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
-			} else {
-				if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
-						isMonday(Integer.parseInt(in.substring(0, 4)),
-								Integer.parseInt(in.substring(5, 7)),
-								Integer.parseInt(in.substring(8, 10)))) {
-					return true;
-				} else if (Integer.parseInt(in.substring(0, 4)) == 2019 && Integer.parseInt(in.substring(8, 10)) == 22) {
-					return true;
-				}
+
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 11) {
+			if (Integer.parseInt(in.substring(0, 4)) == 2019 && Integer.parseInt(in.substring(8, 10)) == 1) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 3) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 4) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 5) {
+				return true;
+			}
+
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 6) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
 				throw new IllegalArgumentException();
-			} else {
-				if (Integer.parseInt(in.substring(8, 10)) == 3) {
-					return true;
-				} else if (Integer.parseInt(in.substring(8, 10)) == 23) {
-					return true;
-				}
 			}
 
-		} else if (Integer.parseInt(in.substring(5, 7)) == 12) {
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 7) {
 			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
 				throw new IllegalArgumentException();
-			} else {
-				return false;
+			}
+
+			if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
+					isMonday(Integer.parseInt(in.substring(0, 4)),
+							Integer.parseInt(in.substring(5, 7)),
+							Integer.parseInt(in.substring(8, 10)))) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(0, 4)) == 2020 && (Integer.parseInt(in.substring(8, 10)) == 23 || Integer.parseInt(in.substring(8, 10)) == 24)) {
+				return true;
+			}
+
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 8) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+				throw new IllegalArgumentException();
+			}
+
+			if (Integer.parseInt(in.substring(0, 4)) == 2020 && Integer.parseInt(in.substring(8, 10)) == 10) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(0, 4)) != 2020 && Integer.parseInt(in.substring(8, 10)) == 11) {
+				return true;
+			}
+
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 9) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+				throw new IllegalArgumentException();
+			}
+
+			if ((Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 2 &&
+					isMonday(Integer.parseInt(in.substring(0, 4)),
+							Integer.parseInt(in.substring(5, 7)),
+							Integer.parseInt(in.substring(8, 10)))) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 23) {
+				return true;
+			}
+
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 10) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+				throw new IllegalArgumentException();
+			}
+
+			if (Integer.parseInt(in.substring(0, 4)) != 2020 && (Integer.parseInt(in.substring(8, 10)) - 1) / 7 == 1 &&
+					isMonday(Integer.parseInt(in.substring(0, 4)),
+							Integer.parseInt(in.substring(5, 7)),
+							Integer.parseInt(in.substring(8, 10)))) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(0, 4)) == 2019 && Integer.parseInt(in.substring(8, 10)) == 22) {
+				return true;
+			}
+
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 11) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 30) {
+				throw new IllegalArgumentException();
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 3) {
+				return true;
+			}
+
+			if (Integer.parseInt(in.substring(8, 10)) == 23) {
+				return true;
+			}
+
+		}
+
+		if (Integer.parseInt(in.substring(5, 7)) == 12) {
+			if (Integer.parseInt(in.substring(8, 10)) < 1 || Integer.parseInt(in.substring(8, 10)) > 31) {
+				throw new IllegalArgumentException();
 			}
 		}
 		return false;
