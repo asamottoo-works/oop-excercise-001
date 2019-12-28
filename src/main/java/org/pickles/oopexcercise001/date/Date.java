@@ -15,8 +15,8 @@ public class Date {
 		this.day = new Day(dayString);
 	}
 
-	public Date(int year, int month, int day) {
-		this.year = new Year(year);
+	public Date(Year year, int month, int day) {
+		this.year = year;
 		this.month = new Month(month);
 		this.day = new Day(day);
 	}

@@ -1,6 +1,7 @@
 package org.pickles.oopexcercise001;
 
 import org.pickles.oopexcercise001.date.Date;
+import org.pickles.oopexcercise001.date.Year;
 
 public class ReiwaHoliday {
 
@@ -31,7 +32,7 @@ public class ReiwaHoliday {
 
 		Date targetDate = new Date(in);
 
-		if (targetDate.year.value < 2019) {
+		if (targetDate.year.isBeforeFirstReiwaYear()) {
 			throw new IllegalArgumentException();
 		}
 
@@ -76,14 +77,14 @@ public class ReiwaHoliday {
 	}
 
 	private Date getYesterday(Date targetDate) {
-		int resYear = targetDate.year.value;
+		Year resYear = targetDate.year;
 		int resMonth = targetDate.month.value;
 		int resDay = targetDate.day.value;
 		resDay -= 1;
 		if (resDay < 1) {
 			resMonth -= 1;
 			if (resMonth < 1) {
-				resYear -= 1;
+				resYear = targetDate.year.previousYear();
 				resMonth = 12;
 			}
 			int[] daysOfMonth = getDaysOfMonth(resYear);
@@ -93,17 +94,17 @@ public class ReiwaHoliday {
 	}
 
 	private Date getTomorrow(Date targetDate) {
-		int resYear = targetDate.year.value;
+		Year resYear = targetDate.year;
 		int resMonth = targetDate.month.value;
 		int resDay = targetDate.day.value;
 
-		int[] targetDaysOfMonth = getDaysOfMonth(targetDate.year.value);
+		int[] targetDaysOfMonth = getDaysOfMonth(targetDate.year);
 
 		resDay += 1;
 		if (resDay > targetDaysOfMonth[targetDate.month.value]) {
 			resMonth += 1;
 			if (resMonth > 12) {
-				resYear += 1;
+				resYear = targetDate.year.nextYear();
 				resMonth = 1;
 			}
 			resDay = 1;
@@ -117,7 +118,7 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.value == 2019) {
+			if (targetDate.year.isFirstReiwaYear()) {
 				throw new IllegalArgumentException();
 			}
 
@@ -133,11 +134,11 @@ public class ReiwaHoliday {
 		}
 
 		if (targetDate.month.value == 2) {
-			if (targetDate.day.value < 1 || targetDate.day.value > (isLeapYear(targetDate.year.value) ? 29 : 28)) {
+			if (targetDate.day.value < 1 || targetDate.day.value > (targetDate.year.isLeapYear() ? 29 : 28)) {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.value == 2019) {
+			if (targetDate.year.isFirstReiwaYear()) {
 				throw new IllegalArgumentException();
 
 			}
@@ -156,7 +157,7 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.value == 2019) {
+			if (targetDate.year.isFirstReiwaYear()) {
 				throw new IllegalArgumentException();
 			}
 
@@ -170,7 +171,7 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.value == 2019) {
+			if (targetDate.year.isFirstReiwaYear()) {
 				throw new IllegalArgumentException();
 			}
 
@@ -185,7 +186,7 @@ public class ReiwaHoliday {
 
 			}
 
-			if (targetDate.year.value == 2019 && targetDate.day.value == 1) {
+			if (targetDate.year.isFirstReiwaYear() && targetDate.day.value == 1) {
 				return true;
 			}
 
@@ -215,11 +216,11 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.value != 2020 && (targetDate.day.value - 1) / 7 == 2 && isMonday(targetDate)) {
+			if (!targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.value - 1) / 7 == 2 && isMonday(targetDate)) {
 				return true;
 			}
 
-			if (targetDate.year.value == 2020 && (targetDate.day.value == 23 || targetDate.day.value == 24)) {
+			if (targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.value == 23 || targetDate.day.value == 24)) {
 				return true;
 			}
 
@@ -230,11 +231,11 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.value == 2020 && targetDate.day.value == 10) {
+			if (targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.value == 10) {
 				return true;
 			}
 
-			if (targetDate.year.value != 2020 && targetDate.day.value == 11) {
+			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.value == 11) {
 				return true;
 			}
 
@@ -260,11 +261,11 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.value != 2020 && (targetDate.day.value - 1) / 7 == 1 && isMonday(targetDate)) {
+			if (!targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.value - 1) / 7 == 1 && isMonday(targetDate)) {
 				return true;
 			}
 
-			if (targetDate.year.value == 2019 && targetDate.day.value == 22) {
+			if (targetDate.year.isFirstReiwaYear() && targetDate.day.value == 22) {
 				return true;
 			}
 
@@ -305,10 +306,13 @@ public class ReiwaHoliday {
 	private int getDayOfWeekNumber(Date targetDate) {
 		// 日:0, 月:1, 火:2, 水:3, 木:4, 金:5, 土:6
 		int dayOfWeek = 2; // 2019/01/01は火曜日
-		for (int baseYear = 2019; baseYear < targetDate.year.value; baseYear++) {
-			dayOfWeek += isLeapYear(baseYear) ? 2 : 1;
+		Year indexYear = new Year(2019);
+		while (indexYear.lessThan(targetDate.year)) {
+			dayOfWeek += indexYear.isLeapYear() ? 2 : 1;
+			indexYear = indexYear.nextYear();
 		}
-		int[] daysOfMonth = getDaysOfMonth(targetDate.year.value);
+
+		int[] daysOfMonth = getDaysOfMonth(targetDate.year);
 		for (int baseMonth = 1; baseMonth < targetDate.month.value; baseMonth++) {
 			dayOfWeek += daysOfMonth[baseMonth];
 		}
@@ -316,24 +320,11 @@ public class ReiwaHoliday {
 		return dayOfWeek % 7;
 	}
 
-	private boolean isLeapYear(int year) {
-		if (year % 4 == 0) {
-			if (year % 100 == 0) {
-				if (year % 400 == 0) {
-					return true;
-				}
-				return false;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private int[] getDaysOfMonth(int year) {
+	private int[] getDaysOfMonth(Year year) {
 		int[] res = new int[13];
 		res[0] = 0;
 		res[1] = 31;
-		res[2] = isLeapYear(year) ? 29 : 28;
+		res[2] = year.isLeapYear() ? 29 : 28;
 		res[3] = 31;
 		res[4] = 30;
 		res[5] = 31;
