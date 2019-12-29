@@ -1,7 +1,6 @@
 package org.pickles.oopexcercise001;
 
-import org.pickles.oopexcercise001.date.Date;
-import org.pickles.oopexcercise001.date.Year;
+import org.pickles.oopexcercise001.date.*;
 
 public class ReiwaHoliday {
 
@@ -36,7 +35,7 @@ public class ReiwaHoliday {
 			throw new IllegalArgumentException();
 		}
 
-		if (targetDate.month.value < 1) {
+		if (targetDate.month.lessThan(Month.JANUARY)) {
 			throw new IllegalArgumentException();
 		}
 
@@ -61,7 +60,7 @@ public class ReiwaHoliday {
 		Date yesterday = getYesterday(targetDate);
 		Date tomorrow = getTomorrow(targetDate);
 
-		if (targetDate.month.value == 5 && targetDate.day.value == 6 && getDayOfWeekNumber(targetDate) == 3) {
+		if (targetDate.month.same(Month.MAY) && targetDate.day.same(6) && WeekCalculator.execute(targetDate).isIncludeOf(Week.MONDAY, Week.TUESDAY, Week.WEDNESDAY)) {
 			return true;
 		}
 
@@ -78,43 +77,39 @@ public class ReiwaHoliday {
 
 	private Date getYesterday(Date targetDate) {
 		Year resYear = targetDate.year;
-		int resMonth = targetDate.month.value;
-		int resDay = targetDate.day.value;
-		resDay -= 1;
-		if (resDay < 1) {
-			resMonth -= 1;
-			if (resMonth < 1) {
-				resYear = targetDate.year.previousYear();
-				resMonth = 12;
+		Month resMonth = targetDate.month;
+		Day resDay = targetDate.day;
+		if (resDay.same(1)) {
+			if (targetDate.month.same(Month.JANUARY)) {
+				resYear = targetDate.year.previous();
 			}
-			int[] daysOfMonth = getDaysOfMonth(resYear);
-			resDay = daysOfMonth[resMonth];
+			resMonth = targetDate.month.previous();
+			resDay = LastDaysOfMonthCalculator.execute(targetDate.year, resMonth);
+		} else {
+			resDay = targetDate.day.previous();
 		}
 		return new Date(resYear, resMonth, resDay);
 	}
 
 	private Date getTomorrow(Date targetDate) {
 		Year resYear = targetDate.year;
-		int resMonth = targetDate.month.value;
-		int resDay = targetDate.day.value;
+		Month resMonth = targetDate.month;
+		Day resDay = targetDate.day;
 
-		int[] targetDaysOfMonth = getDaysOfMonth(targetDate.year);
-
-		resDay += 1;
-		if (resDay > targetDaysOfMonth[targetDate.month.value]) {
-			resMonth += 1;
-			if (resMonth > 12) {
-				resYear = targetDate.year.nextYear();
-				resMonth = 1;
-			}
-			resDay = 1;
+		if (!resDay.same(LastDaysOfMonthCalculator.execute(targetDate.year, targetDate.month))) {
+			return new Date(resYear, resMonth, resDay.next());
 		}
-		return new Date(resYear, resMonth, resDay);
+
+		if (resMonth.same(Month.DECEMBER)) {
+			resYear = targetDate.year.next();
+		}
+		resMonth = resMonth.next();
+		return new Date(resYear, resMonth, Day.FIRST);
 	}
 
 	private boolean isPublicHoliday(Date targetDate) {
- 		if (targetDate.month.value == 1) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
+ 		if (targetDate.month.same(Month.JANUARY)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
 				throw new IllegalArgumentException();
 			}
 
@@ -122,19 +117,17 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.day.value == 1) {
+			if (targetDate.day.same(Day.FIRST)) {
 				return true;
 			}
 
-			if ((targetDate.day.value - 1) / 7 == 1 &&
-					isMonday(targetDate)) {
+			if (targetDate.day.isWeekOfMonthOf(1) && isMonday(targetDate)) {
 				return true;
 			}
-
 		}
 
-		if (targetDate.month.value == 2) {
-			if (targetDate.day.value < 1 || targetDate.day.value > (targetDate.year.isLeapYear() ? 29 : 28)) {
+		if (targetDate.month.same(Month.FEBRUARY)) {
+			if (targetDate.day.lessThan(Day.FIRST) || targetDate.day.moreThan(LastDaysOfMonthCalculator.execute(targetDate.year, targetDate.month))) {
 				throw new IllegalArgumentException();
 			}
 
@@ -143,17 +136,17 @@ public class ReiwaHoliday {
 
 			}
 
-			if (targetDate.day.value == 11) {
+			if (targetDate.day.same(11)) {
 				return true;
 			}
 
-			if (targetDate.day.value == 23) {
+			if (targetDate.day.same(23)) {
 				return true;
 			}
 		}
 
-		if (targetDate.month.value == 3) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
+		if (targetDate.month.same(Month.MARCH)) {
+			if (targetDate.day.same(Day.FIRST) || targetDate.day.same(31)) {
 				throw new IllegalArgumentException();
 			}
 
@@ -161,13 +154,13 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.day.value == 21) {
+			if (targetDate.day.same(21)) {
 				return true;
 			}
 		}
 
-		if (targetDate.month.value == 4) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
+		if (targetDate.month.same(Month.APRIL)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
 				throw new IllegalArgumentException();
 			}
 
@@ -175,119 +168,112 @@ public class ReiwaHoliday {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.day.value == 29) {
+			if (targetDate.day.same(29)) {
 				return true;
 			}
 		}
 
-		if (targetDate.month.value == 5) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
+		if (targetDate.month.same(Month.MAY)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
 				throw new IllegalArgumentException();
 
 			}
 
-			if (targetDate.year.isFirstReiwaYear() && targetDate.day.value == 1) {
+			if (targetDate.year.isFirstReiwaYear() && targetDate.day.same(1)) {
 				return true;
 			}
 
-			if (targetDate.day.value == 3) {
+			if (targetDate.day.same(3)) {
 				return true;
 			}
 
-			if (targetDate.day.value == 4) {
+			if (targetDate.day.same(4)) {
 				return true;
 			}
 
-			if (targetDate.day.value == 5) {
+			if (targetDate.day.same(5)) {
 				return true;
 			}
-
 		}
 
-		if (targetDate.month.value == 6) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
+		if (targetDate.month.same(Month.JUNE)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		if (targetDate.month.same(Month.JULY)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
 				throw new IllegalArgumentException();
 			}
 
+			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.isWeekOfMonthOf(2) && isMonday(targetDate)) {
+				return true;
+			}
+
+			if (targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.same(23) || targetDate.day.same(24))) {
+				return true;
+			}
 		}
 
-		if (targetDate.month.value == 7) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
+		if (targetDate.month.same(Month.AUGUST)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
 				throw new IllegalArgumentException();
 			}
 
-			if (!targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.value - 1) / 7 == 2 && isMonday(targetDate)) {
+			if (targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.same(10)) {
 				return true;
 			}
 
-			if (targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.value == 23 || targetDate.day.value == 24)) {
+			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.same(11)) {
 				return true;
 			}
-
 		}
 
-		if (targetDate.month.value == 8) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
+		if (targetDate.month.same(Month.SEPTEMBER)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
 				throw new IllegalArgumentException();
 			}
 
-			if (targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.value == 10) {
+			if (targetDate.day.isWeekOfMonthOf(2) && isMonday(targetDate)) {
 				return true;
 			}
 
-			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.value == 11) {
+			if (targetDate.day.same(23)) {
 				return true;
 			}
-
 		}
 
-		if (targetDate.month.value == 9) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
+		if (targetDate.month.same(Month.OCTOBER)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
 				throw new IllegalArgumentException();
 			}
 
-			if ((targetDate.day.value - 1) / 7 == 2 && isMonday(targetDate)) {
+			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.isWeekOfMonthOf(1) && isMonday(targetDate)) {
 				return true;
 			}
 
-			if (targetDate.day.value == 23) {
+			if (targetDate.year.isFirstReiwaYear() && targetDate.day.same(22)) {
 				return true;
 			}
-
 		}
 
-		if (targetDate.month.value == 10) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
+		if (targetDate.month.same(Month.NOVEMBER)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
 				throw new IllegalArgumentException();
 			}
 
-			if (!targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.value - 1) / 7 == 1 && isMonday(targetDate)) {
+			if (targetDate.day.same(3)) {
 				return true;
 			}
 
-			if (targetDate.year.isFirstReiwaYear() && targetDate.day.value == 22) {
+			if (targetDate.day.same(23)) {
 				return true;
 			}
-
 		}
 
-		if (targetDate.month.value == 11) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 30) {
-				throw new IllegalArgumentException();
-			}
-
-			if (targetDate.day.value == 3) {
-				return true;
-			}
-
-			if (targetDate.day.value == 23) {
-				return true;
-			}
-
-		}
-
-		if (targetDate.month.value == 12) {
-			if (targetDate.day.value < 1 || targetDate.day.value > 31) {
+		if (targetDate.month.same(Month.DECEMBER)) {
+			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
 				throw new IllegalArgumentException();
 			}
 		}
@@ -295,49 +281,10 @@ public class ReiwaHoliday {
 	}
 
 	private boolean isNormalHoliday(Date targetDate) {
-		int dayOfWeek = getDayOfWeekNumber(targetDate);
-		return dayOfWeek == 0 || dayOfWeek == 6;
+		return WeekCalculator.execute(targetDate).isIncludeOf(Week.SUNDAY, Week.SATURDAY);
 	}
 
 	private boolean isMonday(Date targetDate) {
-		return getDayOfWeekNumber(targetDate) == 1;
-	}
-
-	private int getDayOfWeekNumber(Date targetDate) {
-		// 日:0, 月:1, 火:2, 水:3, 木:4, 金:5, 土:6
-		int dayOfWeek = 2; // 2019/01/01は火曜日
-		Year indexYear = new Year(2019);
-		while (indexYear.lessThan(targetDate.year)) {
-			dayOfWeek += indexYear.isLeapYear() ? 2 : 1;
-			indexYear = indexYear.nextYear();
-		}
-
-		int[] daysOfMonth = getDaysOfMonth(targetDate.year);
-		for (int baseMonth = 1; baseMonth < targetDate.month.value; baseMonth++) {
-			dayOfWeek += daysOfMonth[baseMonth];
-		}
-		dayOfWeek += targetDate.day.value - 1;
-		return dayOfWeek % 7;
-	}
-
-	private int[] getDaysOfMonth(Year year) {
-		int[] res = new int[13];
-		res[0] = 0;
-		res[1] = 31;
-		res[2] = year.isLeapYear() ? 29 : 28;
-		res[3] = 31;
-		res[4] = 30;
-		res[5] = 31;
-		res[6] = 30;
-		res[7] = 31;
-		res[8] = 31;
-		res[9] = 30;
-		res[10] = 31;
-		res[11] = 30;
-		res[12] = 31;
-		for (int index = 1; index <= 12; index++) {
-			res[0] += res[index];
-		}
-		return res;
+		return WeekCalculator.execute(targetDate).isIncludeOf(Week.MONDAY);
 	}
 }

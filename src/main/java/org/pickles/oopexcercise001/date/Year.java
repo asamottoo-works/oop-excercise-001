@@ -20,7 +20,7 @@ public class Year {
 	}
 
 	public boolean isSecondTokyoOlympicYear() {
-		return this.value == 2019;
+		return this.value == 2020;
 	}
 
 	public boolean lessThan(Year target) {
@@ -40,11 +40,15 @@ public class Year {
 		return false;
 	}
 
-	public Year nextYear() {
+	public Year next() {
 		return new Year(this.value + 1);
 	}
 
-	public Year previousYear() {
+	public Year previous() {
 		return new Year(this.value - 1);
+	}
+
+	public String toString() {
+		return String.valueOf(this.value);
 	}
 }

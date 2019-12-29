@@ -11,13 +11,17 @@ public class Date {
 		String dayString = dateString.substring(8, 10);
 
 		this.year = new Year(yearString);
-		this.month = new Month(monthString);
+		this.month = Month.numberOf(monthString);
 		this.day = new Day(dayString);
 	}
 
-	public Date(Year year, int month, int day) {
+	public Date(Year year, Month month, Day day) {
 		this.year = year;
-		this.month = new Month(month);
-		this.day = new Day(day);
+		this.month = month;
+		this.day = day;
+	}
+
+	public String toString() {
+		return year.toString() + "/" + month.toString() + "/" + day.toString();
 	}
 }
