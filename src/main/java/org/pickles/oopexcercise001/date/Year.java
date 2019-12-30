@@ -1,7 +1,7 @@
 package org.pickles.oopexcercise001.date;
 
 public class Year {
-	private int value;
+	private final int value;
 
 	public Year(String value) {
 		this.value = Integer.parseInt(value);

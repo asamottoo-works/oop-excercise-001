@@ -3,7 +3,7 @@ package org.pickles.oopexcercise001.date;
 public class Day {
 	public static Day FIRST = new Day(1);
 
-	private int value;
+	private final int value;
 
 	public Day(String value) {
 		this.value = Integer.parseInt(value);

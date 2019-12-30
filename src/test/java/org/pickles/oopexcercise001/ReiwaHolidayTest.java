@@ -24,10 +24,35 @@ public class ReiwaHolidayTest {
 		assertTrue(isCatchException(() -> checker.check("")));
 		assertTrue(isCatchException(() -> checker.check("19/05/01")));
 		assertTrue(isCatchException(() -> checker.check("2019-05-01")));
+		assertTrue(isCatchException(() -> checker.check("2019/05/-1")));
 		assertTrue(isCatchException(() -> checker.check("2019/04/30")));
 		assertTrue(isCatchException(() -> checker.check("2019/05/32")));
 		assertTrue(isCatchException(() -> checker.check("2019/05/00")));
-		assertTrue(isCatchException(() -> checker.check("2019/05/-1")));
+
+		assertTrue(isCatchException(() -> checker.check("2021/01/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/01/32")));
+		assertTrue(isCatchException(() -> checker.check("2021/02/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/02/29")));
+		assertTrue(isCatchException(() -> checker.check("2021/03/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/03/32")));
+		assertTrue(isCatchException(() -> checker.check("2021/04/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/04/31")));
+		assertTrue(isCatchException(() -> checker.check("2021/05/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/05/32")));
+		assertTrue(isCatchException(() -> checker.check("2021/06/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/06/31")));
+		assertTrue(isCatchException(() -> checker.check("2021/07/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/07/32")));
+		assertTrue(isCatchException(() -> checker.check("2021/08/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/08/32")));
+		assertTrue(isCatchException(() -> checker.check("2021/09/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/09/31")));
+		assertTrue(isCatchException(() -> checker.check("2021/10/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/10/32")));
+		assertTrue(isCatchException(() -> checker.check("2021/11/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/11/31")));
+		assertTrue(isCatchException(() -> checker.check("2021/12/00")));
+		assertTrue(isCatchException(() -> checker.check("2021/12/32")));
 	}
 
 	@Test

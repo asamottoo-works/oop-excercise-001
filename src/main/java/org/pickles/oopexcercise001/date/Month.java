@@ -14,7 +14,7 @@ public enum Month {
 	NOVEMBER(11),
 	DECEMBER(12);
 
-	private int value;
+	private final int value;
 
 	Month(int value) {
 		this.value = value;

@@ -57,8 +57,8 @@ public class ReiwaHoliday {
 	private boolean isAdditionalHoliday(String in) {
 		Date targetDate = new Date(in);
 
-		Date yesterday = getYesterday(targetDate);
-		Date tomorrow = getTomorrow(targetDate);
+		Date yesterday = targetDate.getYesterday();
+		Date tomorrow = targetDate.getTomorrow();
 
 		if (targetDate.month.same(Month.MAY) && targetDate.day.same(6) && WeekCalculator.execute(targetDate).isIncludeOf(Week.MONDAY, Week.TUESDAY, Week.WEDNESDAY)) {
 			return true;
@@ -73,38 +73,6 @@ public class ReiwaHoliday {
 		}
 
 		return false;
-	}
-
-	private Date getYesterday(Date targetDate) {
-		Year resYear = targetDate.year;
-		Month resMonth = targetDate.month;
-		Day resDay = targetDate.day;
-		if (resDay.same(1)) {
-			if (targetDate.month.same(Month.JANUARY)) {
-				resYear = targetDate.year.previous();
-			}
-			resMonth = targetDate.month.previous();
-			resDay = LastDaysOfMonthCalculator.execute(targetDate.year, resMonth);
-		} else {
-			resDay = targetDate.day.previous();
-		}
-		return new Date(resYear, resMonth, resDay);
-	}
-
-	private Date getTomorrow(Date targetDate) {
-		Year resYear = targetDate.year;
-		Month resMonth = targetDate.month;
-		Day resDay = targetDate.day;
-
-		if (!resDay.same(LastDaysOfMonthCalculator.execute(targetDate.year, targetDate.month))) {
-			return new Date(resYear, resMonth, resDay.next());
-		}
-
-		if (resMonth.same(Month.DECEMBER)) {
-			resYear = targetDate.year.next();
-		}
-		resMonth = resMonth.next();
-		return new Date(resYear, resMonth, Day.FIRST);
 	}
 
 	private boolean isPublicHoliday(Date targetDate) {
