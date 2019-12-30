@@ -39,10 +39,6 @@ public class ReiwaHoliday {
 			throw new IllegalArgumentException();
 		}
 
-		if (targetDate.month.lessThan(Month.JANUARY)) {
-			throw new IllegalArgumentException();
-		}
-
 		if (isPublicHoliday(targetDate)) {
 			return true;
 		}
