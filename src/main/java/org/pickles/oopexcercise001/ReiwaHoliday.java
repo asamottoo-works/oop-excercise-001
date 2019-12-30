@@ -31,7 +31,11 @@ public class ReiwaHoliday {
 
 		Date targetDate = new Date(in);
 
-		if (targetDate.year.isBeforeFirstReiwaYear()) {
+		if (BeforeReiwaEraValidator.isInvalid(targetDate)) {
+			throw new IllegalArgumentException();
+		}
+
+		if (RangeOfDaysOfMonthFactory.generate(targetDate).outOfRange(targetDate.day)) {
 			throw new IllegalArgumentException();
 		}
 
@@ -77,14 +81,6 @@ public class ReiwaHoliday {
 
 	private boolean isPublicHoliday(Date targetDate) {
  		if (targetDate.month.same(Month.JANUARY)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
-				throw new IllegalArgumentException();
-			}
-
-			if (targetDate.year.isFirstReiwaYear()) {
-				throw new IllegalArgumentException();
-			}
-
 			if (targetDate.day.same(Day.FIRST)) {
 				return true;
 			}
@@ -95,15 +91,6 @@ public class ReiwaHoliday {
 		}
 
 		if (targetDate.month.same(Month.FEBRUARY)) {
-			if (targetDate.day.lessThan(Day.FIRST) || targetDate.day.moreThan(LastDaysOfMonthCalculator.execute(targetDate.year, targetDate.month))) {
-				throw new IllegalArgumentException();
-			}
-
-			if (targetDate.year.isFirstReiwaYear()) {
-				throw new IllegalArgumentException();
-
-			}
-
 			if (targetDate.day.same(11)) {
 				return true;
 			}
@@ -114,39 +101,18 @@ public class ReiwaHoliday {
 		}
 
 		if (targetDate.month.same(Month.MARCH)) {
-			if (targetDate.day.same(Day.FIRST) || targetDate.day.same(31)) {
-				throw new IllegalArgumentException();
-			}
-
-			if (targetDate.year.isFirstReiwaYear()) {
-				throw new IllegalArgumentException();
-			}
-
 			if (targetDate.day.same(21)) {
 				return true;
 			}
 		}
 
 		if (targetDate.month.same(Month.APRIL)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
-				throw new IllegalArgumentException();
-			}
-
-			if (targetDate.year.isFirstReiwaYear()) {
-				throw new IllegalArgumentException();
-			}
-
 			if (targetDate.day.same(29)) {
 				return true;
 			}
 		}
 
 		if (targetDate.month.same(Month.MAY)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
-				throw new IllegalArgumentException();
-
-			}
-
 			if (targetDate.year.isFirstReiwaYear() && targetDate.day.same(1)) {
 				return true;
 			}
@@ -161,12 +127,6 @@ public class ReiwaHoliday {
 
 			if (targetDate.day.same(5)) {
 				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.JUNE)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
-				throw new IllegalArgumentException();
 			}
 		}
 
@@ -185,10 +145,6 @@ public class ReiwaHoliday {
 		}
 
 		if (targetDate.month.same(Month.AUGUST)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
-				throw new IllegalArgumentException();
-			}
-
 			if (targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.same(10)) {
 				return true;
 			}
@@ -199,10 +155,6 @@ public class ReiwaHoliday {
 		}
 
 		if (targetDate.month.same(Month.SEPTEMBER)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
-				throw new IllegalArgumentException();
-			}
-
 			if (targetDate.day.isWeekOfMonthOf(2) && isMonday(targetDate)) {
 				return true;
 			}
@@ -213,10 +165,6 @@ public class ReiwaHoliday {
 		}
 
 		if (targetDate.month.same(Month.OCTOBER)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
-				throw new IllegalArgumentException();
-			}
-
 			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.isWeekOfMonthOf(1) && isMonday(targetDate)) {
 				return true;
 			}
@@ -227,22 +175,12 @@ public class ReiwaHoliday {
 		}
 
 		if (targetDate.month.same(Month.NOVEMBER)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(30)) {
-				throw new IllegalArgumentException();
-			}
-
 			if (targetDate.day.same(3)) {
 				return true;
 			}
 
 			if (targetDate.day.same(23)) {
 				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.DECEMBER)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
-				throw new IllegalArgumentException();
 			}
 		}
 		return false;
