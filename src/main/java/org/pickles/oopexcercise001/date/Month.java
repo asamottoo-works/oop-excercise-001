@@ -29,7 +29,7 @@ public enum Month {
 	}
 
 	public boolean same(Month month) {
-		return this == month;
+		return this.value == month.value;
 	}
 
 	public Month previous() {

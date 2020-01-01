@@ -1,6 +1,7 @@
 package org.pickles.oopexcercise001;
 
 import org.pickles.oopexcercise001.date.*;
+import org.pickles.oopexcercise001.date.publicholiday.PublicHoliday;
 
 public class ReiwaHoliday {
 
@@ -39,7 +40,7 @@ public class ReiwaHoliday {
 			throw new IllegalArgumentException();
 		}
 
-		if (isPublicHoliday(targetDate)) {
+		if (PublicHoliday.isPublicHoliday(targetDate)) {
 			return true;
 		}
 
@@ -64,121 +65,14 @@ public class ReiwaHoliday {
 			return true;
 		}
 
-		if (isMonday(targetDate) && isPublicHoliday(yesterday)) {
+		if (isMonday(targetDate) && PublicHoliday.isPublicHoliday(yesterday)) {
 			return true;
 		}
 
-		if (isPublicHoliday(yesterday) && isPublicHoliday(tomorrow)) {
+		if (PublicHoliday.isPublicHoliday(yesterday) && PublicHoliday.isPublicHoliday(tomorrow)) {
 			return true;
 		}
 
-		return false;
-	}
-
-	private boolean isPublicHoliday(Date targetDate) {
- 		if (targetDate.month.same(Month.JANUARY)) {
-			if (targetDate.day.same(Day.FIRST)) {
-				return true;
-			}
-
-			if (targetDate.day.isWeekOfMonthOf(1) && isMonday(targetDate)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.FEBRUARY)) {
-			if (targetDate.day.same(11)) {
-				return true;
-			}
-
-			if (targetDate.day.same(23)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.MARCH)) {
-			if (targetDate.day.same(21)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.APRIL)) {
-			if (targetDate.day.same(29)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.MAY)) {
-			if (targetDate.year.isFirstReiwaYear() && targetDate.day.same(1)) {
-				return true;
-			}
-
-			if (targetDate.day.same(3)) {
-				return true;
-			}
-
-			if (targetDate.day.same(4)) {
-				return true;
-			}
-
-			if (targetDate.day.same(5)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.JULY)) {
-			if (targetDate.day.lessThan(1) || targetDate.day.moreThan(31)) {
-				throw new IllegalArgumentException();
-			}
-
-			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.isWeekOfMonthOf(2) && isMonday(targetDate)) {
-				return true;
-			}
-
-			if (targetDate.year.isSecondTokyoOlympicYear() && (targetDate.day.same(23) || targetDate.day.same(24))) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.AUGUST)) {
-			if (targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.same(10)) {
-				return true;
-			}
-
-			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.same(11)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.SEPTEMBER)) {
-			if (targetDate.day.isWeekOfMonthOf(2) && isMonday(targetDate)) {
-				return true;
-			}
-
-			if (targetDate.day.same(23)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.OCTOBER)) {
-			if (!targetDate.year.isSecondTokyoOlympicYear() && targetDate.day.isWeekOfMonthOf(1) && isMonday(targetDate)) {
-				return true;
-			}
-
-			if (targetDate.year.isFirstReiwaYear() && targetDate.day.same(22)) {
-				return true;
-			}
-		}
-
-		if (targetDate.month.same(Month.NOVEMBER)) {
-			if (targetDate.day.same(3)) {
-				return true;
-			}
-
-			if (targetDate.day.same(23)) {
-				return true;
-			}
-		}
 		return false;
 	}
 

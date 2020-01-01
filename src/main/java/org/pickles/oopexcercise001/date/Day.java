@@ -45,14 +45,6 @@ public class Day {
 		return this.value > target.value;
 	}
 
-	public int weekOfMonth() {
-		return (this.value - 1) / 7;
-	}
-
-	public boolean isWeekOfMonthOf(int target) {
-		return this.weekOfMonth() == target;
-	}
-
 	public String toString() {
 		return String.valueOf(this.value);
 	}
@@ -72,6 +64,27 @@ public class Day {
 		public boolean doNext() {
 			index++;
 			return index <= target;
+		}
+	}
+
+	public WeekOfMonth weekOfMonth() {
+		return new WeekOfMonth(this);
+	}
+
+	public static class WeekOfMonth {
+		private int value;
+
+		public WeekOfMonth(Day day) {
+			this.value = ((day.value - 1) / 7) + 1;
+		}
+
+		public WeekOfMonth(int value) {
+			if (value < 1 || value > 5) throw new IllegalArgumentException();
+			this.value = value;
+		}
+
+		public boolean same(WeekOfMonth target) {
+			return this.value == target.value;
 		}
 	}
 }
